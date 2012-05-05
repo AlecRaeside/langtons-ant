@@ -25,18 +25,13 @@ var LA = {
 		document.body.appendChild(canvas);
 		LA.ctx = canvas.getContext("2d");
 
-		//setup matrix for ant/trail tracking
-		LA.matrix = new Array(LA.config.numVertCells);
-		for (var i=0; i<LA.config.numVertCells; i++) {
-			var length = LA.config.numHorizCells;
-			var row = new Array(length);
-
-			for (var j=0;j<length;j++) {
-				row[j]=0;
-			}
-			LA.matrix[i]=row;
-		}
-
+		//setup matrix for ant/trail tracking 
+		//(see function definition for awesome array creation function)
+		LA.matrix = [].fillWith( 
+						[].fillWith (0 , LA.config.numHorizCells ), //row
+						LA.config.numVertCells 
+					);
+		
 		//setup ant
 		LA.ant.x = LA.config.numHorizCells / 2;
 		LA.ant.y = LA.config.numVertCells / 2;
@@ -45,19 +40,26 @@ var LA = {
 		setInterval(LA.turn,1000/LA.config.frameRate);
 	},
 	ant: {
-		x:100,
-		y:100
-	}
+		x:50,
+		y:50,
+		dir:"up",
+	},
 	turn : function() {
-		if ()
-		LA.ctx.fillStyle = 'black';
+		var isAntCellBlack = LA.matrix[LA.ant.y][LA.ant.x]===1;
+
+		LA.ctx.fillStyle = (isAntCellBlack) ? "black" : "white";
+		if (isAntCellBlack) {
+
+		}
 	  	LA.ctx.fillRect(100,100,LA.config.cellSize, LA.config.cellSize);
 	}
 }
 function log(v) {
 	console.log(v);
 }
-Array.prototype.repeat= function(what, L){
- while(L) this[--L]= what;
- return this;
+
+//from http://stackoverflow.com/a/2044990
+Array.prototype.fillWith = function(what, L){
+	while(L) this[--L] = what;
+	return this;
 }
