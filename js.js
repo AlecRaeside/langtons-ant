@@ -61,14 +61,13 @@ var LA = {
 		dir:0 //up
 	},
 	turn : function() {
-		tick++;
 		//debugger
 		// 1. Flip colour
 		
 
 		// 2. Turn left or right
 		var dirChange = LA.matrix[LA.ant.y][LA.ant.x] ? -1 : 1;
-		LA.ctx.fillStyle = (LA.matrix[LA.ant.y][LA.ant.x]) ? "black" : "red";
+		LA.ctx.fillStyle = (LA.matrix[LA.ant.y][LA.ant.x]) ? "black" : "white";
 		LA.ant.dir = (LA.ant.dir + dirChange).mod(4);
 		
 		LA.ctx.fillRect(LA.ant.x * LA.config.cellSize, LA.ant.y * LA.config.cellSize ,LA.config.cellSize, LA.config.cellSize);
@@ -97,9 +96,7 @@ var LA = {
 		} else {
 			LA.matrix[LA.ant.y][LA.ant.x]=true;
 		}
-		if (tick%60===0) {
-			log("second")
-		}
+		
 	}
 
 }
