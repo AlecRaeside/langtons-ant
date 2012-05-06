@@ -19,7 +19,7 @@ var dirs = {
 //global Langtons Ant object
 var LA = {
 	config : {
-		cellSize : 5,
+		cellSize : 3,
 		numHorizCells : 100,
 		numVertCells : 100,
 		frameRate: 60
@@ -58,19 +58,29 @@ var LA = {
 	ant: {
 		x:50,
 		y:50,
-		dir:0 //up
+		dir:0, //up
+		turnLeft:function() {
+			LA.ant.dir = (LA.ant.dir - 1).mod(4);
+		},
+		turnRight:function() {
+			LA.ant.dir = (LA.ant.dir + 1).mod(4);
+		}
 	},
 	turn : function() {
-		//debugger
-		// 1. Flip colour
-		
 
-		// 2. Turn left or right
-		var dirChange = LA.matrix[LA.ant.y][LA.ant.x] ? -1 : 1;
-		LA.ctx.fillStyle = (LA.matrix[LA.ant.y][LA.ant.x]) ? "black" : "white";
-		LA.ant.dir = (LA.ant.dir + dirChange).mod(4);
+		var antCell = LA.matrix[LA.ant.y][LA.ant.x];
+
+		// 1. Turn left or right
+		if (antCell) {
+			LA.ant.turnLeft();
+		} else {
+			LA.ant.turnRight()
+		}
 		
+		// 2. set colour based on cell state then flip colour
+		LA.ctx.fillStyle = (antCell) ? "white" : "black";
 		LA.ctx.fillRect(LA.ant.x * LA.config.cellSize, LA.ant.y * LA.config.cellSize ,LA.config.cellSize, LA.config.cellSize);
+		LA.matrix[LA.ant.y][LA.ant.x] = !antCell;
 
 		// 3. Move forward
 		switch (LA.ant.dir) {
@@ -87,16 +97,6 @@ var LA = {
 				LA.ant.x--;
 				break;
 		}
-
-	  	
-	  	//console.log(LA.ant.x,LA.ant.y,LA.matrix[LA.ant.y][LA.ant.x])
-
-	  	if (LA.matrix[LA.ant.y][LA.ant.x]) {
-			LA.matrix[LA.ant.y][LA.ant.x]=false;
-		} else {
-			LA.matrix[LA.ant.y][LA.ant.x]=true;
-		}
-		
 	}
 
 }
