@@ -19,7 +19,7 @@ var dirs = {
 //global Langtons Ant object
 var LA = {
 	config : {
-		cellSize : 3,
+		cellSize : 5,
 		numHorizCells : 100,
 		numVertCells : 100,
 		frameRate: 60
