@@ -1,13 +1,8 @@
 window.onload=function() {
-
-
-
 	//setInterval(tick,1000/60);
 	LA.init()
-
-
 }
- var tick =0;
+var tick =0;
 var dirs = {
 	UP:0,
 	RIGHT:1,
@@ -19,9 +14,9 @@ var dirs = {
 //global Langtons Ant object
 var LA = {
 	config : {
-		cellSize : 5,
-		numHorizCells : 100,
-		numVertCells : 100,
+		cellSize : 3,
+		numHorizCells : 200,
+		numVertCells : 200,
 		frameRate: 60
 	},
 
@@ -53,7 +48,7 @@ var LA = {
 		LA.ant.y = LA.config.numVertCells / 2;
 
 		//initiate turn timer
-		setInterval(LA.turn,1000/LA.config.frameRate);
+		timer = setInterval(LA.turn,1000/LA.config.frameRate);
 	},
 	ant: {
 		x:50,
@@ -67,8 +62,12 @@ var LA = {
 		}
 	},
 	turn : function() {
-
-		var antCell = LA.matrix[LA.ant.y][LA.ant.x];
+		try {
+			var antCell = LA.matrix[LA.ant.y][LA.ant.x];
+		} catch (err) {
+			clearInterval(timer);
+			log("stopped");
+		}
 
 		// 1. Turn left or right
 		if (antCell) {
@@ -77,6 +76,10 @@ var LA = {
 			LA.ant.turnRight()
 		}
 		
+		
+		//LA.ctx.shadowColor = 'blue';
+		//LA.ctx.shadowBlur = 40;
+
 		// 2. set colour based on cell state then flip colour
 		LA.ctx.fillStyle = (antCell) ? "white" : "black";
 		LA.ctx.fillRect(LA.ant.x * LA.config.cellSize, LA.ant.y * LA.config.cellSize ,LA.config.cellSize, LA.config.cellSize);
