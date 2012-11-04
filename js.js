@@ -10,6 +10,10 @@ var dirs = {
 	LEFT:3
 
 }
+var i;
+var ant;
+var key;
+var antCell;
 
 
 //global Langtons Ant object
@@ -24,6 +28,8 @@ var LA = {
 	mouseY:0,
 	theta:0,
 	radius:800,
+	ants:[],
+	turns:0,
 	onDocumentMouseMove:function(event) {
 
 		LA.mouseX = ( event.clientX - windowHalfX ) * 6;
@@ -45,32 +51,26 @@ var LA = {
 		LA.scene = new THREE.Scene();
 		LA.scene.fog = new THREE.Fog( 0x000000, 1, 20000 );
 		
-		LA.light = new THREE.PointLight( 0xff5511 );
+		LA.light = new THREE.PointLight( 0xffffff );
 		LA.scene.add( LA.light );
 		LA.light.position.z=300
 		
-
-
 		LA.geometry = new THREE.CubeGeometry( LA.config.cellSize, LA.config.cellSize,LA.config.cellSize);
-
-				
 
 		LA.material = new THREE.MeshLambertMaterial({color:0xffffff});
 
-		
-		
 		//setup matrix for ant/trail tracking 
-		//(see function definition for awesome array creation function)
-		 //setup matrix for ant/trail tracking
+
 		LA.matrix = {};
 		
 		//setup ant
-		LA.ant.x = 0;
-		LA.ant.y = 0;
 
-		//initiate turn timer
-		//timer = setInterval(LA.turn,1000/LA.config.frameRate);
+		//LA.ants.push(new LA.ant());
+		for (var a = 20; a>0;a--){
+			LA.ants.push(new LA.ant());
+		}
 
+		LA.numants = LA.ants.length;
 
 		
 		LA.renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, clearAlpha: 1 } );
@@ -83,59 +83,75 @@ var LA = {
 		requestAnimationFrame(LA.turn);
 
 	},
-	ant: {
-		x:1,
-		y:1,
-		dir:0, //up
-		turnLeft:function() {
-			LA.ant.dir = (LA.ant.dir - 1).mod(4);
-		},
-		turnRight:function() {
-			LA.ant.dir = (LA.ant.dir + 1).mod(4);
+	ant:function() {
+		var c = new THREE.Color();
+		c.setRGB(Math.random(),Math.random(),Math.random());
+		return {
+			x : parseInt((Math.random()-0.5)*LA.ants.length*7),
+			y : parseInt((Math.random()-0.5)*LA.ants.length*7),
+			dir : 0, //up
+			colour : Math.random(),
+			material : new THREE.MeshLambertMaterial( { color : c } ),
+			turnLeft : function() {
+				
+				this.dir = (this.dir - 1).mod(4);
+			},
+			turnRight : function() {
+				
+				this.dir = (this.dir + 1).mod(4);
+			}
 		}
 	},
 	turn : function() {
 		requestAnimationFrame(LA.turn);
+		LA.turns++;
 		//setTimeout(LA.turn,400);
-		LA.key = LA.ant.y+","+LA.ant.x;
-		LA.antCell = LA.matrix.hasOwnProperty(LA.key)
-		
-		if (LA.antCell) {
-			//LA.antCell = LA.matrix[LA.key];
+		i = LA.numants-1;
+		do {
+			ant = LA.ants[i];
 			
-			LA.scene.remove(LA.matrix[LA.key])
-			delete LA.matrix[LA.key];
-		} else {
-			LA.mesh = new THREE.Mesh( LA.geometry, LA.material );
-			LA.scene.add(LA.mesh);
-			LA.mesh.position.x = LA.ant.x * LA.config.cellSize;
-			LA.mesh.position.y = LA.ant.y * LA.config.cellSize;
-			LA.matrix[LA.key] = LA.mesh;
 
-		}
-		// 1. Turn left or right
-		if (LA.antCell) {
-			LA.ant.turnLeft();
-		} else {
-			LA.ant.turnRight();
-		}
+			//console.log(ant);
+			key = ant.y+","+ant.x;
+			antCell = LA.matrix.hasOwnProperty(key)
+			//console.log(key,antCell,ant.dir)
+			//console.log(antCell,ant.dir,ant.x,ant.y)
+			
+			if (antCell) {
+				LA.scene.remove(LA.matrix[key])
+				delete LA.matrix[key];
+			} else {
+				LA.mesh = new THREE.Mesh( LA.geometry, ant.material );
+				LA.scene.add(LA.mesh);
+				LA.mesh.position.x = ant.x * LA.config.cellSize;
+				LA.mesh.position.y = ant.y * LA.config.cellSize;
+				LA.matrix[key] = LA.mesh;
 
-		
-		// 3. Move forward
-		switch (LA.ant.dir) {
-			case dirs.UP:
-				LA.ant.y--;
-				break;
-			case dirs.RIGHT:
-				LA.ant.x++;
-				break;
-			case dirs.DOWN:
-				LA.ant.y++;
-				break;
-			case dirs.LEFT:
-				LA.ant.x--;
-				break;
-		}
+			}
+			// 1. Turn left or right
+			if (antCell) {
+				ant.turnLeft();
+			} else {
+				ant.turnRight();
+			}
+
+			
+			// 3. Move forward
+			switch (ant.dir) {
+				case dirs.UP:
+					ant.y--;
+					break;
+				case dirs.RIGHT:
+					ant.x++;
+					break;
+				case dirs.DOWN:
+					ant.y++;
+					break;
+				case dirs.LEFT:
+					ant.x--;
+					break;
+			} 
+		} while (i--)
 		LA.render();
 	},
 	render:function() {
