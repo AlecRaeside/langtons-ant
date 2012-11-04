@@ -66,7 +66,7 @@ var LA = {
 		//setup ant
 
 		//LA.ants.push(new LA.ant());
-		for (var a = 20; a>0;a--){
+		for (var a = 10; a>0;a--){
 			LA.ants.push(new LA.ant());
 		}
 
